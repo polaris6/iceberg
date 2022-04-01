@@ -311,7 +311,7 @@ distribution & sort order to Spark.
 {{< /hint >}}
 
 {{< hint info >}}
-To write with SQL, both global sort (`ORDER BY`) and local sort (`SORT BY`) work for the requirement.
+With SQL, you can use `ORDER BY` to achieve global sorting or `SORT BY` to achieve local sorting.
 
 To write with DataFrame, both global sort (`orderBy`/`sort`) and local sort (`sortWithinPartitions`) work for the requirement.
 {{< /hint >}}
