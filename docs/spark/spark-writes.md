@@ -346,7 +346,7 @@ SELECT id, data, category, ts FROM another_table
 SORT BY ts, category
 ```
 
-Of course, you can use `SORT BY` with partition transforms:
+Of course, you can also use `SORT BY` with partition transforms.
 
 ```sql
 INSERT INTO prod.db.sample
