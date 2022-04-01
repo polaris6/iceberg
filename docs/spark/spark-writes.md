@@ -311,7 +311,9 @@ distribution & sort order to Spark.
 {{< /hint >}}
 
 {{< hint info >}}
-Both global sort (`orderBy`/`sort`) and local sort (`sortWithinPartitions`) work for the requirement.
+To write with SQL, both global sort (`ORDER BY`) and local sort (`SORT BY`) work for the requirement.
+
+To write with DataFrame, both global sort (`orderBy`/`sort`) and local sort (`sortWithinPartitions`) work for the requirement.
 {{< /hint >}}
 
 Let's go through writing the data against below sample table:
@@ -328,12 +330,28 @@ PARTITIONED BY (days(ts), category)
 
 To write data to the sample table, your data needs to be sorted by `days(ts), category`.
 
-If you're inserting data with SQL statement, you can use `ORDER BY` to achieve it, like below:
+If you're inserting data with SQL statement, you can use either `ORDER BY` to trigger global sort, or `SORT BY` to trigger local sort. Global sort like below:
 
 ```sql
 INSERT INTO prod.db.sample
 SELECT id, data, category, ts FROM another_table
 ORDER BY ts, category
+```
+
+Local sort like below:
+
+```sql
+INSERT INTO prod.db.sample
+SELECT id, data, category, ts FROM another_table
+SORT BY ts, category
+```
+
+Of course, you can use `SORT BY` with partition transforms:
+
+```sql
+INSERT INTO prod.db.sample
+SELECT id, data, category, ts FROM another_table
+SORT BY days(ts), category
 ```
 
 If you're inserting data with DataFrame, you can use either `orderBy`/`sort` to trigger global sort, or `sortWithinPartitions`
