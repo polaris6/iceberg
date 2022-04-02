@@ -311,7 +311,7 @@ distribution & sort order to Spark.
 {{< /hint >}}
 
 {{< hint info >}}
-With SQL, you can use `ORDER BY` to achieve global sorting or `SORT BY` to achieve local sorting.
+With SQL, you can use [`ORDER BY`](https://spark.apache.org/docs/latest/sql-ref-syntax-qry-select-orderby.html) to achieve global sorting or [`SORT BY`](https://spark.apache.org/docs/latest/sql-ref-syntax-qry-select-sortby.html) to achieve local sorting.
 
 With dataframes, you can use `orderBy`/`sort` to achieve global sorting or `sortWithinPartitions` to achieve local sorting.
 {{< /hint >}}
@@ -346,7 +346,9 @@ SELECT id, data, category, ts FROM another_table
 SORT BY ts, category
 ```
 
-Of course, you can also use `SORT BY` with partition transforms.
+Of course, you can also use `SORT BY` with partition transformations. 
+
+You can use the [date-and-timestamp-functions](https://spark.apache.org/docs/latest/sql-ref-functions-builtin.html#date-and-timestamp-functions) in Spark SQL when your partition transformation is time related, or use truncate related functions such as substr in Spark SQL when your partition transformation is `truncate[W]`, you can also [define and register UDFs](https://spark.apache.org/docs/latest/sql-ref-functions-udf-scalar.html) and invoke them in Spark SQL.
 
 ```sql
 INSERT INTO prod.db.sample
