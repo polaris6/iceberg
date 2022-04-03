@@ -353,7 +353,7 @@ You can use the [date-and-timestamp-functions](https://spark.apache.org/docs/lat
 ```sql
 INSERT INTO prod.db.sample
 SELECT id, data, category, ts FROM another_table
-SORT BY days(ts), category
+SORT BY day(ts), category
 ```
 
 If you're inserting data with DataFrame, you can use either `orderBy`/`sort` to trigger global sort, or `sortWithinPartitions`
