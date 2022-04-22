@@ -311,9 +311,9 @@ distribution & sort order to Spark.
 {{< /hint >}}
 
 {{< hint info >}}
-With SQL, you can use [`ORDER BY`](https://spark.apache.org/docs/latest/sql-ref-syntax-qry-select-orderby.html) to achieve global sorting or [`SORT BY`](https://spark.apache.org/docs/latest/sql-ref-syntax-qry-select-sortby.html) to achieve local sorting.
+In SQL, the [`ORDER BY`](https://spark.apache.org/docs/latest/sql-ref-syntax-qry-select-orderby.html) will achieve global sorting and [`SORT BY`](https://spark.apache.org/docs/latest/sql-ref-syntax-qry-select-sortby.html) will achieve local sorting.
 
-With dataframes, you can use `orderBy`/`sort` to achieve global sorting or `sortWithinPartitions` to achieve local sorting.
+In the Dataframe API, the `orderBy`/`sort` functions will achieve global sorting and `sortWithinPartitions` will achieve local sorting.
 {{< /hint >}}
 
 Let's go through writing the data against below sample table:
@@ -328,9 +328,9 @@ USING iceberg
 PARTITIONED BY (days(ts), category)
 ```
 
-To write data to the sample table, your data needs to be sorted by `days(ts), category`.
+#### In Spark SQL
 
-If you're inserting data with SQL statement, you can use either `ORDER BY` to trigger global sort, or `SORT BY` to trigger local sort. Global sort like below:
+To globally sort data based on `ts` and `category`:
 
 ```sql
 INSERT INTO prod.db.sample
@@ -338,7 +338,7 @@ SELECT id, data, category, ts FROM another_table
 ORDER BY ts, category
 ```
 
-Local sort like below:
+To locally sort data based on `ts` and `category`:
 
 ```sql
 INSERT INTO prod.db.sample
@@ -346,9 +346,7 @@ SELECT id, data, category, ts FROM another_table
 SORT BY ts, category
 ```
 
-Of course, you can also use `SORT BY` with partition transformations. 
-
-You can use the [date-and-timestamp-functions](https://spark.apache.org/docs/latest/sql-ref-functions-builtin.html#date-and-timestamp-functions) in Spark SQL when your partition transformation is time related, or use truncate related functions such as substr in Spark SQL when your partition transformation is `truncate[W]`, you can also [define and register UDFs](https://spark.apache.org/docs/latest/sql-ref-functions-udf-scalar.html) and invoke them in Spark SQL.
+`SORT BY` clauses can also be used with partition transforms. The [date-and-timestamp-functions](https://spark.apache.org/docs/latest/sql-ref-functions-builtin.html#date-and-timestamp-functions) will be used when partition transforms is time related; truncate related functions such as `substr` will be used when partition transform is `truncate[W]`; [define and register UDFs](https://spark.apache.org/docs/latest/sql-ref-functions-udf-scalar.html) can also take effect.
 
 ```sql
 INSERT INTO prod.db.sample
@@ -356,14 +354,31 @@ SELECT id, data, category, ts FROM another_table
 SORT BY day(ts), category
 ```
 
-If you're inserting data with DataFrame, you can use either `orderBy`/`sort` to trigger global sort, or `sortWithinPartitions`
-to trigger local sort. Local sort for example:
+#### In the Dataframe API
+
+To globally sort data based on `ts` and `category`:
+
+```scala
+data.sort("ts", "category")
+    .writeTo("prod.db.sample")
+    .append()
+```
+
+```scala
+data.orderBy("ts", "category")
+    .writeTo("prod.db.sample")
+    .append()
+```
+
+To locally sort data based on `ts` and `category`:
 
 ```scala
 data.sortWithinPartitions("ts", "category")
     .writeTo("prod.db.sample")
     .append()
 ```
+
+#### Bucket Transform
 
 You can simply add the original column to the sort condition for the most partition transformations, except `bucket`.
 
